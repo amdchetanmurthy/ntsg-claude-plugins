@@ -20,13 +20,7 @@
     "scale-out",
     "scale-up"
   ],
-  "category": "infrastructure",
   "license": "Proprietary",
-  "engines": {
-    "claude-code": ">=1.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/pensando/ai-lab/ntsg-claude-plugins"
-  }
+  "repository": "https://github.com/pensando/ai-lab/ntsg-claude-plugins"
+
 }
