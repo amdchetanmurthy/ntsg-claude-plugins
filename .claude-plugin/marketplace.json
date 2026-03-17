@@ -1,0 +1,42 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "ntsg-claude-plugins",
+  "description": "NTSG Claude Code plugins for AMD AI infrastructure and related tooling",
+  "owner": {
+    "name": "NTSG",
+    "email": "cmurthy@amd.com"
+  },
+  "plugins": [
+    {
+      "name": "amd-ai-infra",
+      "description": "Comprehensive tooling for managing and debugging AMD GPU infrastructure, including ROCm diagnostics, scale-out networking, topology visualization, and knowledge base integration",
+      "version": "0.1.0",
+      "author": {
+        "name": "NTSG",
+        "email": "cmurthy@amd.com"
+      },
+      "source": "./plugins/amd-ai-infra",
+      "category": "infrastructure",
+      "strict": false,
+      "tags": [
+        "amd",
+        "gpu",
+        "rocm",
+        "networking",
+        "diagnostics",
+        "infrastructure",
+        "debugging"
+      ],
+      "homepage": "https://github.com/pensando/ai-lab/ntsg-claude-plugins/plugins/amd-ai-infra",
+      "keywords": [
+        "AMD",
+        "GPU",
+        "ROCm",
+        "Scale-out",
+        "Diagnostics",
+        "Topology",
+        "Infrastructure"
+      ]
+    }
+  ]
+}

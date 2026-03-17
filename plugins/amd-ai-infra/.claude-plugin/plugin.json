@@ -1,0 +1,32 @@
+{
+  "name": "amd-ai-infra",
+  "version": "0.1.0",
+  "description": "Comprehensive AI-powered unified debugging and knowledge management system for AMD's complete AI cluster infrastructure stack",
+  "author": {
+    "name": "AMD NTSG",
+    "email": "chetan.murthy@amd.com"
+  },
+  "homepage": "https://amd.atlassian.net/wiki/spaces/EN/pages/1540933740/",
+  "keywords": [
+    "amd",
+    "gpu",
+    "rocm",
+    "networking",
+    "debugging",
+    "infrastructure",
+    "diagnostics",
+    "broadcom",
+    "pensando",
+    "scale-out",
+    "scale-up"
+  ],
+  "category": "infrastructure",
+  "license": "Proprietary",
+  "engines": {
+    "claude-code": ">=1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pensando/ai-lab/ntsg-claude-plugins"
+  }
+}
