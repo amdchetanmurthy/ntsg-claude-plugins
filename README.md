@@ -59,6 +59,12 @@ When published, plugins can be installed via:
 /plugin install {plugin-name}@ntsg-claude-plugins
 ```
 
+command line 
+```
+ claude plugin marketplace  add git@github.com:amdchetanmurthy/ntsg-claude-plugins.git
+ claude plugin install amd-ai-infra@ntsg-claude-plugins
+ ```
+
 ## Development
 
 ### Plugin Structure
