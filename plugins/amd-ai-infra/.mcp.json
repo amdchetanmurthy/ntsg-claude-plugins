@@ -1,11 +1,7 @@
-{
-  "mcpServers": {
-    "amd-ai-infra": {
-      "command": "python3",
-      "args": ["-m", "tools.mcp_server"],
-      "env": {
-        "PYTHONPATH": "/home/cmurthy/ai-lab/projects/amd-ai-infra"
+  {
+    "mcpServers": {
+      "ntsg": {
+        "url": "http://192.168.67.4:8765/sse"
       }
     }
   }
-}
