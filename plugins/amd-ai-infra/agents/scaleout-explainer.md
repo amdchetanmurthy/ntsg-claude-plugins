@@ -49,15 +49,14 @@ Provide clear, detailed explanations of AMD Pensando DSC architecture, RDMA prot
 
 ## MCP Tools Available
 
-**Scale-OUT Knowledge Base Tools:**
-- `amd_scaleout_kb_search_hybrid(query, limit)` - Search for NIC documentation
-- `amd_scaleout_kb_search_semantic(query, limit)` - Semantic search
-- `amd_scaleout_kb_get_entry(entry_id)` - Get specific documentation
+**Knowledge Base Tools (ntsg_kb_*):**
+- `ntsg_kb_search(query, subsystem="scaleout", method="hybrid")` - Search for NIC documentation
+- `ntsg_kb_get_entry(entry_id)` - Get specific documentation
 
-**Scale-OUT Lab Topology Tools:**
-- `amd_scaleout_lab_get_server(server_name)` - Get server details
-- `amd_scaleout_lab_get_nic(nic_id)` - Get NIC configuration
-- `amd_scaleout_lab_get_connection(server_name)` - Get network connections
+**Lab Topology Tools (ntsg_lab_*):**
+- `ntsg_lab_get_server(server_name, subsystem="scaleout")` - Get server details
+- `ntsg_lab_get_card(card_name, subsystem="scaleout")` - Get NIC configuration
+- `ntsg_lab_get_connections(server_name)` - Get network connections
 
 ## Explanation Workflow
 
@@ -69,16 +68,19 @@ Provide clear, detailed explanations of AMD Pensando DSC architecture, RDMA prot
 ### Step 2: Search Knowledge Base
 ```python
 # Search for relevant documentation
-amd_scaleout_kb_search_hybrid(query="<concept>", limit=5)
+ntsg_kb_search(query="<concept>", subsystem="scaleout", method="hybrid")
 ```
 
 ### Step 3: Gather Context
-```bash
+```python
 # If explaining specific NIC, get details
-amd_scaleout_lab_get_server(server_name="waco1-1")
+ntsg_lab_get_server(server_name="waco1-1", subsystem="scaleout")
 
 # Get NIC configuration
-amd_scaleout_lab_get_nic(nic_id="pci-0000:17:00.0")
+ntsg_lab_get_card(card_name="pci-0000:17:00.0", subsystem="scaleout")
+
+# Get connection details
+ntsg_lab_get_connections(server_name="waco1-1")
 ```
 
 ### Step 4: Provide Layered Explanation

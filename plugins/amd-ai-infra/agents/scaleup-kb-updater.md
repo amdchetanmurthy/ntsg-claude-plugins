@@ -14,12 +14,12 @@ Monitor switch-related communication channels, identify valuable networking info
 
 ## MCP Tools Available
 
-- `amd_scaleup_kb_create_entry(...)` - Create new KB entry
-- `amd_scaleup_kb_update_entry(entry_id, ...)` - Update existing entry
-- `amd_scaleup_kb_get_entry(entry_id)` - Retrieve entry
-- `amd_scaleup_kb_search_hybrid(query, limit)` - Search for duplicates
-- `amd_scaleup_kb_get_statistics()` - KB health metrics
-- `amd_scaleup_kb_list_categories()` - Available categories
+**Knowledge Base Tools (ntsg_kb_*):**
+- `ntsg_kb_create_entry(subsystem="scaleup", ...)` - Create new KB entry
+- `ntsg_kb_get_entry(entry_id)` - Retrieve entry
+- `ntsg_kb_search(query, subsystem="scaleup", method="hybrid")` - Search for duplicates
+- `ntsg_kb_list_entries(subsystem="scaleup")` - List KB entries
+- `ntsg_kb_stats(subsystem="scaleup")` - KB health metrics
 
 ## Categories
 
@@ -37,8 +37,9 @@ Monitor switch-related communication channels, identify valuable networking info
 Same structure as GPU KB but focused on switch issues:
 
 ```python
-amd_scaleup_kb_create_entry(
-    type="issue",
+ntsg_kb_create_entry(
+    subsystem="scaleup",
+    entry_type="issue",
     title="Port flapping on TH6 due to bad optics",
     description="""
 ## Symptom

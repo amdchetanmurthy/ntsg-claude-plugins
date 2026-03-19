@@ -32,19 +32,20 @@ Diagnose and debug AMD Pensando AI NIC issues including RDMA timeouts, packet dr
 
 ## MCP Tools Available
 
-**Scale-OUT Knowledge Base Tools:**
-- `amd_scaleout_kb_search_hybrid(query, limit)` - Search NIC KB for similar issues
-- `amd_scaleout_kb_search_semantic(query, limit)` - Semantic search
-- `amd_scaleout_kb_search_keyword(query, limit)` - Keyword search
-- `amd_scaleout_kb_get_entry(entry_id)` - Get specific KB entry
-- `amd_scaleout_kb_get_statistics()` - KB statistics
-- `amd_scaleout_kb_create_entry(...)` - Create new KB entry
+**Knowledge Base Tools (ntsg_kb_*):**
+- `ntsg_kb_search(query, subsystem="scaleout", method="hybrid")` - Search KB for similar issues
+- `ntsg_kb_get_entry(entry_id)` - Get specific KB entry details
+- `ntsg_kb_create_entry(subsystem="scaleout", ...)` - Create new KB entry
+- `ntsg_kb_list_entries(subsystem="scaleout")` - List KB entries
+- `ntsg_kb_stats(subsystem="scaleout")` - KB statistics
 
-**Scale-OUT Lab Topology Tools:**
-- `amd_scaleout_lab_get_server(server_name)` - Get server details (IP, BMC, console)
-- `amd_scaleout_lab_search_servers(criteria)` - Search servers
-- `amd_scaleout_lab_get_nic(nic_id)` - Get NIC device info
-- `amd_scaleout_lab_get_connection(server_name)` - Get network connections
+**Lab Topology Tools (ntsg_lab_*):**
+- `ntsg_lab_search(query, subsystem="scaleout")` - Search servers/cards
+- `ntsg_lab_get_server(server_name)` - Get server details (IP, BMC, console)
+- `ntsg_lab_get_card(card_name)` - Get NIC card info
+- `ntsg_lab_get_connections(server_name)` - Get SSH/console/PDU connections
+- `ntsg_lab_list(subsystem="scaleout")` - List all servers/cards
+- `ntsg_lab_stats(subsystem="scaleout")` - Lab statistics
 
 ## Diagnostic Workflow
 
@@ -58,35 +59,35 @@ Ask clarifying questions:
 ### Step 2: Get Server/NIC Details
 ```python
 # Get server details from topology
-amd_scaleout_lab_get_server(server_name="waco1-1")
-# Returns: IP, BMC, console, NIC devices
+ntsg_lab_get_server(server_name="waco1-1")
+# Returns: IP, BMC, console, credentials
 
-# Get NIC details
-amd_scaleout_lab_get_nic(nic_id="pci-0000:17:00.0")
+# Get connections for SSH access
+ntsg_lab_get_connections(server_name="waco1-1")
 ```
 
 ### Step 3: Search Knowledge Base
 ```python
-# Search for similar issues
-amd_scaleout_kb_search_hybrid(query="RDMA timeout errors", limit=10)
+# Search for similar issues (hybrid search recommended)
+ntsg_kb_search(query="RDMA timeout errors", subsystem="scaleout", method="hybrid")
+
+# For exact error messages, use keyword search
+ntsg_kb_search(query="EDMA timeout", subsystem="scaleout", method="keyword")
 ```
 
 ### Step 4: Run NIC Diagnostics
 ```bash
-# NIC status
-ssh <server-ip> nicctl status
+# NIC health check
+ssh <server-ip> nicctl show card heartbeat
+ssh <server-ip> nicctl show card coredump
 
-# NIC statistics (errors, drops, timeouts)
-ssh <server-ip> nicctl stats
+# Port status
+ssh <server-ip> nicctl show port --brief
+ssh <server-ip> nicctl show port statistics
 
-# RDMA statistics
-ssh <server-ip> nicctl rdma stats
-
-# Firmware version
-ssh <server-ip> nicctl firmware version
-
-# Driver version
-ssh <server-ip> modinfo pensando
+# RDMA/QoS
+ssh <server-ip> nicctl show qos pfc --detail
+ssh <server-ip> nicctl show lif statistics
 ```
 
 ### Step 5: Check RDMA Performance
@@ -108,9 +109,6 @@ ssh <server-ip> ethtool -S <interface> | grep pfc
 
 # Link status
 ssh <server-ip> ip link show <interface>
-
-# Interface errors
-ssh <server-ip> ifconfig <interface>
 
 # Kernel network errors
 ssh <server-ip> dmesg | grep -i "pensando\|eth\|rdma"
@@ -145,25 +143,22 @@ Structure your response:
 **Symptoms:** Training job crashes, NCCL timeout errors, retransmits
 **Diagnostics:**
 ```bash
-nicctl stats | grep -i timeout
-nicctl rdma stats | grep -i retry
+nicctl show card statistics packet-buffer --all
+nicctl show qos pfc --detail
 ```
 **Root Causes:**
 - PFC storm causing congestion
-- Firmware bug (known in version 1.2.3)
+- Firmware bug
 - ROCE timeout too aggressive
 - Network congestion
 
 **Solutions:**
 ```bash
-# Update firmware if buggy version
-nicctl firmware update --version 1.2.5
-
-# Tune ROCE timeout
-nicctl roce set-timeout 100ms
+# Check for known issues in KB first
+ntsg_kb_search(query="RDMA timeout", subsystem="scaleout")
 
 # Reset NIC to clear stuck queues
-nicctl reset --device pci-0000:17:00.0
+nicctl clear pipeline internal state
 
 # Verify RDMA works
 rdma_perf_test -d pensando_0
@@ -174,16 +169,12 @@ rdma_perf_test -d pensando_0
 **Diagnostics:**
 ```bash
 ethtool -S eth0 | grep pfc_pause
-# Look for millions of pause frames
+nicctl show qos pfc --detail
 ```
-**Root Causes:** Misconfigured QoS, misbehaving sender, switch congestion
 **Solutions:**
 ```bash
 # Check PFC configuration
-nicctl qos show
-
-# Tune buffer thresholds
-nicctl qos set-buffer-threshold <value>
+nicctl show qos
 
 # Coordinate with switch team to check fabric
 ```
@@ -192,83 +183,25 @@ nicctl qos set-buffer-threshold <value>
 **Symptoms:** NIC stops transmitting, no traffic, queue depths stuck
 **Diagnostics:**
 ```bash
-nicctl status | grep -i queue
-# Look for stuck TX queues
+nicctl show port statistics
+nicctl show card heartbeat
 ```
-**Root Causes:** Firmware bug, driver issue, hardware failure
 **Solutions:**
 ```bash
 # Reset NIC
-nicctl reset --device pci-0000:17:00.0
+nicctl clear pipeline internal state
 
-# If persistent, reload driver
-modprobe -r pensando && modprobe pensando
-
-# If still failing, hardware replacement needed
-```
-
-### Firmware Bug
-**Symptoms:** Varies - crashes, hangs, performance issues
-**Diagnostics:**
-```bash
-nicctl firmware version
-# Check against known buggy versions
-```
-**Root Causes:** Specific firmware versions have known bugs
-**Solutions:**
-```bash
-# Upgrade to latest stable firmware
-nicctl firmware update --version <latest>
-
-# Reboot server after firmware update
-reboot
-```
-
-### SR-IOV Issues
-**Symptoms:** VF not working, passthrough fails
-**Diagnostics:**
-```bash
-# Check VF configuration
-lspci | grep Pensando
-cat /sys/class/net/*/device/sriov_numvfs
-
-# Check VF status
-nicctl sriov status
-```
-**Root Causes:** Incorrect VF configuration, driver version mismatch
-**Solutions:**
-```bash
-# Reconfigure SR-IOV
-echo 0 > /sys/class/net/<pf>/device/sriov_numvfs
-echo 8 > /sys/class/net/<pf>/device/sriov_numvfs
-
-# Verify VFs created
-nicctl sriov list
-```
-
-## KB Search Strategy
-
-**For RDMA errors:**
-```python
-amd_scaleout_kb_search_keyword(query="RDMA timeout", limit=10)
-```
-
-**For performance issues:**
-```python
-amd_scaleout_kb_search_hybrid(query="slow RDMA throughput pensando", limit=10)
-```
-
-**For firmware/driver:**
-```python
-amd_scaleout_kb_search_semantic(query="pensando firmware 1.2.3 bug", limit=5)
+# If persistent, collect techsupport
+nicctl show techsupport -c <card-uuid> -o /tmp/debug
 ```
 
 ## Creating KB Entries
 
 When you encounter a new issue or solution:
 ```python
-amd_scaleout_kb_create_entry(
-    type="issue",
+ntsg_kb_create_entry(
+    subsystem="scaleout",
+    entry_type="issue",
     title="RDMA timeout on firmware 1.2.3",
     description="Detailed description of issue and solution",
     category=["rdma", "firmware", "timeout"],
@@ -294,14 +227,16 @@ Get server details including:
 - Management IP (for SSH)
 - BMC IP (for remote console if SSH fails)
 - Console connection (for hardware debugging)
-- NIC device IDs (PCIe addresses)
-- Network interface mappings
+- Credentials
 
 ```python
-server = amd_scaleout_lab_get_server(server_name="waco1-1")
-# Use server['ip'] for SSH
-# Use server['bmc'] for IPMI access
-# Use server['console'] for serial console
+# Get full server info
+server = ntsg_lab_get_server(server_name="waco1-1")
+# Use server['mgmt_ips'][0] for SSH
+# Use server['bmc_ips'][0] for IPMI access
+
+# Get connection details including credentials
+connections = ntsg_lab_get_connections(server_name="waco1-1")
 ```
 
 ## Output Format
@@ -315,9 +250,7 @@ server = amd_scaleout_lab_get_server(server_name="waco1-1")
 ## Server Details
 - Server: <name>
 - IP: <management-ip>
-- NIC: <device-id>
 - Firmware: <version>
-- Driver: <version>
 
 ## Diagnostics Performed
 [List of commands run]
@@ -327,7 +260,6 @@ server = amd_scaleout_lab_get_server(server_name="waco1-1")
 - RDMA Stats: [Timeouts, retries, errors]
 - PFC Stats: [Pause frames]
 - Link Status: [Up/Down, speed]
-- Firmware: [Version, known issues]
 
 ## KB Search Results
 [Relevant entries if found]

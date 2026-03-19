@@ -45,15 +45,14 @@ Provide clear, detailed explanations of Broadcom TH6 switch architecture, switch
 
 ## MCP Tools Available
 
-**Scale-UP Knowledge Base Tools:**
-- `amd_scaleup_kb_search_hybrid(query, limit)` - Search for switch documentation
-- `amd_scaleup_kb_search_semantic(query, limit)` - Semantic search
-- `amd_scaleup_kb_get_entry(entry_id)` - Get specific documentation
+**Knowledge Base Tools (ntsg_kb_*):**
+- `ntsg_kb_search(query, subsystem="scaleup", method="hybrid")` - Search for switch documentation
+- `ntsg_kb_get_entry(entry_id)` - Get specific documentation
 
-**Scale-UP Lab Topology Tools:**
-- `amd_scaleup_lab_get_switch(switch_name)` - Get switch details
-- `amd_scaleup_lab_get_port(port_id)` - Get port configuration
-- `amd_scaleup_lab_get_connection(switch_name)` - Get fabric connections
+**Lab Topology Tools (ntsg_lab_*):**
+- `ntsg_lab_get_server(server_name, subsystem="scaleup")` - Get switch details
+- `ntsg_lab_get_connections(server_name)` - Get fabric connections
+- `ntsg_lab_list(subsystem="scaleup")` - List all switches
 
 ## Explanation Workflow
 
@@ -65,16 +64,16 @@ Provide clear, detailed explanations of Broadcom TH6 switch architecture, switch
 ### Step 2: Search Knowledge Base
 ```python
 # Search for relevant documentation
-amd_scaleup_kb_search_hybrid(query="<concept>", limit=5)
+ntsg_kb_search(query="<concept>", subsystem="scaleup", method="hybrid")
 ```
 
 ### Step 3: Gather Context
-```bash
+```python
 # If explaining specific switch, get topology
-amd_scaleup_lab_get_switch(switch_name="th6-switch-1")
+ntsg_lab_get_server(server_name="th6-switch-1", subsystem="scaleup")
 
 # If explaining fabric, get connections
-amd_scaleup_lab_get_connection(switch_name="th6-switch-1")
+ntsg_lab_get_connections(server_name="th6-switch-1")
 ```
 
 ### Step 4: Provide Layered Explanation

@@ -14,13 +14,11 @@ Ensure knowledge base quality across all subsystems (GPU, scale-up, scale-out) b
 
 ## MCP Tools Available
 
-**All Subsystem KB Tools:**
-- `amd_gpu_kb_get_statistics()` - GPU KB metrics
-- `amd_gpu_kb_search_hybrid(query, limit)` - Search GPU KB
-- `amd_scaleup_kb_get_statistics()` - Switch KB metrics
-- `amd_scaleup_kb_search_hybrid(query, limit)` - Search switch KB
-- `amd_scaleout_kb_get_statistics()` - NIC KB metrics
-- `amd_scaleout_kb_search_hybrid(query, limit)` - Search NIC KB
+**Knowledge Base Tools (ntsg_kb_*):**
+- `ntsg_kb_stats(subsystem)` - KB metrics (subsystem: "gpu", "scaleup", "scaleout", or empty for all)
+- `ntsg_kb_search(query, subsystem, method="hybrid")` - Search KB entries
+- `ntsg_kb_list_entries(subsystem)` - List all entries
+- `ntsg_kb_get_entry(entry_id)` - Get specific entry details
 
 ## Validation Checks
 
@@ -60,9 +58,13 @@ Search for similar entries:
 
 ### Step 1: Get KB Statistics
 ```python
-gpu_stats = amd_gpu_kb_get_statistics()
-scaleup_stats = amd_scaleup_kb_get_statistics()
-scaleout_stats = amd_scaleout_kb_get_statistics()
+# Get stats for all subsystems
+all_stats = ntsg_kb_stats(subsystem="")  # Empty = all
+
+# Or get stats per subsystem
+gpu_stats = ntsg_kb_stats(subsystem="gpu")
+scaleup_stats = ntsg_kb_stats(subsystem="scaleup")
+scaleout_stats = ntsg_kb_stats(subsystem="scaleout")
 
 # Check counts, categories, health metrics
 ```
@@ -76,8 +78,10 @@ For each subsystem:
 ### Step 3: Detect Duplicates
 ```python
 # Example: Check for duplicate GPU memory error entries
-results = amd_gpu_kb_search_hybrid(
+results = ntsg_kb_search(
     query="GPU memory ECC error",
+    subsystem="gpu",
+    method="hybrid",
     limit=20
 )
 # Review results for duplicates (very similar titles/content)
@@ -145,12 +149,12 @@ Overall: 85/100
 ## Validation Commands
 
 ### Check Entry Quality
-```bash
+```python
 # Get entry and validate
-entry = amd_gpu_kb_get_entry(entry_id="gpu-kb-042")
+entry = ntsg_kb_get_entry(entry_id="gpu-kb-042")
 
 # Check required fields
-assert "type" in entry
+assert "entry_type" in entry
 assert "title" in entry
 assert "description" in entry
 assert "category" in entry
@@ -158,14 +162,13 @@ assert len(entry["category"]) >= 1
 
 # Check content quality
 assert "##" in entry["description"]  # Has markdown headers
-assert len(entry["title"]) >= 50
+assert len(entry["title"]) >= 20
 ```
 
 ### Detect Duplicates
 ```python
 # Search for similar entries
-query = "GPU memory error"
-results = amd_gpu_kb_search_hybrid(query=query, limit=10)
+results = ntsg_kb_search(query="GPU memory error", subsystem="gpu", method="hybrid", limit=10)
 
 # Check for high similarity
 for i in range(len(results)):

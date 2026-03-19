@@ -28,11 +28,11 @@ Transform knowledge base entries into polished Confluence documentation, create 
 
 ## MCP Tools Available
 
-**All KB Search Tools:**
-- `amd_gpu_kb_search_hybrid(query, limit)`
-- `amd_scaleup_kb_search_hybrid(query, limit)`
-- `amd_scaleout_kb_search_hybrid(query, limit)`
-- `amd_*_kb_get_entry(entry_id)` - Get full entry details
+**Knowledge Base Tools (ntsg_kb_*):**
+- `ntsg_kb_search(query, subsystem, method="hybrid")` - Search any subsystem (gpu, scaleup, scaleout, or empty for all)
+- `ntsg_kb_get_entry(entry_id)` - Get full entry details
+- `ntsg_kb_list_entries(subsystem)` - List entries
+- `ntsg_kb_stats(subsystem)` - Get KB statistics
 
 ## Publishing Workflows
 

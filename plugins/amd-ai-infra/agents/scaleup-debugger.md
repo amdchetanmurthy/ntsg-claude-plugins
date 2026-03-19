@@ -35,19 +35,20 @@ Diagnose and debug Broadcom TH6 switch fabric issues including port flapping, li
 
 ## MCP Tools Available
 
-**Scale-UP Knowledge Base Tools:**
-- `amd_scaleup_kb_search_hybrid(query, limit)` - Search switch KB for similar issues
-- `amd_scaleup_kb_search_semantic(query, limit)` - Semantic search
-- `amd_scaleup_kb_search_keyword(query, limit)` - Keyword search
-- `amd_scaleup_kb_get_entry(entry_id)` - Get specific KB entry
-- `amd_scaleup_kb_get_statistics()` - KB statistics
-- `amd_scaleup_kb_create_entry(...)` - Create new KB entry
+**Knowledge Base Tools (ntsg_kb_*):**
+- `ntsg_kb_search(query, subsystem="scaleup", method="hybrid")` - Search switch KB for similar issues
+- `ntsg_kb_get_entry(entry_id)` - Get specific KB entry details
+- `ntsg_kb_create_entry(subsystem="scaleup", ...)` - Create new KB entry
+- `ntsg_kb_list_entries(subsystem="scaleup")` - List KB entries
+- `ntsg_kb_stats(subsystem="scaleup")` - KB statistics
 
-**Scale-UP Lab Topology Tools:**
-- `amd_scaleup_lab_get_switch(switch_name)` - Get switch details (IP, SNMP)
-- `amd_scaleup_lab_search_switches(criteria)` - Search switches
-- `amd_scaleup_lab_get_port(port_id)` - Get port info
-- `amd_scaleup_lab_get_connection(switch_name)` - Get switch connections
+**Lab Topology Tools (ntsg_lab_*):**
+- `ntsg_lab_search(query, subsystem="scaleup")` - Search switches/servers
+- `ntsg_lab_get_server(server_name, subsystem="scaleup")` - Get switch/server details
+- `ntsg_lab_get_card(card_name, subsystem="scaleup")` - Get card info
+- `ntsg_lab_get_connections(server_name)` - Get SSH/console/PDU connections
+- `ntsg_lab_list(subsystem="scaleup")` - List all switches/servers
+- `ntsg_lab_stats(subsystem="scaleup")` - Lab statistics
 
 ## Diagnostic Workflow
 
@@ -61,17 +62,20 @@ Ask clarifying questions:
 ### Step 2: Get Switch Details
 ```python
 # Get switch details from topology
-amd_scaleup_lab_get_switch(switch_name="th6-switch-1")
+ntsg_lab_get_server(server_name="th6-switch-1", subsystem="scaleup")
 # Returns: Management IP, SNMP community, port mappings
 
-# Get port details
-amd_scaleup_lab_get_port(port_id="1/25")
+# Get connections for SSH access
+ntsg_lab_get_connections(server_name="th6-switch-1")
 ```
 
 ### Step 3: Search Knowledge Base
 ```python
-# Search for similar issues
-amd_scaleup_kb_search_hybrid(query="port flapping errors", limit=10)
+# Search for similar issues (hybrid search recommended)
+ntsg_kb_search(query="port flapping errors", subsystem="scaleup", method="hybrid")
+
+# For exact error messages, use keyword search
+ntsg_kb_search(query="CRC error", subsystem="scaleup", method="keyword")
 ```
 
 ### Step 4: Run Switch Diagnostics
@@ -298,25 +302,26 @@ show multicast group <group-id>
 
 **For port errors:**
 ```python
-amd_scaleup_kb_search_keyword(query="port flapping CRC error", limit=10)
+ntsg_kb_search(query="port flapping CRC error", subsystem="scaleup", method="keyword")
 ```
 
 **For performance issues:**
 ```python
-amd_scaleup_kb_search_hybrid(query="packet drops congestion th6", limit=10)
+ntsg_kb_search(query="packet drops congestion th6", subsystem="scaleup", method="hybrid")
 ```
 
 **For configuration issues:**
 ```python
-amd_scaleup_kb_search_semantic(query="ECMP imbalance AI traffic", limit=5)
+ntsg_kb_search(query="ECMP imbalance AI traffic", subsystem="scaleup", method="semantic")
 ```
 
 ## Creating KB Entries
 
 When you encounter a new issue or solution:
 ```python
-amd_scaleup_kb_create_entry(
-    type="issue",
+ntsg_kb_create_entry(
+    subsystem="scaleup",
+    entry_type="issue",
     title="Port flapping on TH6 due to optics firmware",
     description="Detailed description of issue and solution",
     category=["port", "optics", "flapping"],
@@ -346,9 +351,13 @@ Get switch details including:
 - Connected nodes/switches
 
 ```python
-switch = amd_scaleup_lab_get_switch(switch_name="th6-switch-1")
-# Use switch['ip'] for SSH
+# Get full switch info
+switch = ntsg_lab_get_server(server_name="th6-switch-1", subsystem="scaleup")
+# Use switch['mgmt_ips'][0] for SSH
 # Use switch['snmp_community'] for SNMP queries
+
+# Get connection details including credentials
+connections = ntsg_lab_get_connections(server_name="th6-switch-1")
 ```
 
 ## Output Format

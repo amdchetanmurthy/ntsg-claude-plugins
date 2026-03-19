@@ -14,12 +14,12 @@ Monitor NIC/RDMA-related communication channels, identify valuable information, 
 
 ## MCP Tools Available
 
-- `amd_scaleout_kb_create_entry(...)` - Create new KB entry
-- `amd_scaleout_kb_update_entry(entry_id, ...)` - Update existing entry
-- `amd_scaleout_kb_get_entry(entry_id)` - Retrieve entry
-- `amd_scaleout_kb_search_hybrid(query, limit)` - Search for duplicates
-- `amd_scaleout_kb_get_statistics()` - KB health metrics
-- `amd_scaleout_kb_list_categories()` - Available categories
+**Knowledge Base Tools (ntsg_kb_*):**
+- `ntsg_kb_create_entry(subsystem="scaleout", ...)` - Create new KB entry
+- `ntsg_kb_get_entry(entry_id)` - Retrieve entry
+- `ntsg_kb_search(query, subsystem="scaleout", method="hybrid")` - Search for duplicates
+- `ntsg_kb_list_entries(subsystem="scaleout")` - List KB entries
+- `ntsg_kb_stats(subsystem="scaleout")` - KB health metrics
 
 ## Categories
 
@@ -37,8 +37,9 @@ Monitor NIC/RDMA-related communication channels, identify valuable information, 
 Same structure as GPU KB but focused on NIC/RDMA issues:
 
 ```python
-amd_scaleout_kb_create_entry(
-    type="issue",
+ntsg_kb_create_entry(
+    subsystem="scaleout",
+    entry_type="issue",
     title="RDMA timeout errors on Pensando firmware 1.2.3",
     description="""
 ## Symptom

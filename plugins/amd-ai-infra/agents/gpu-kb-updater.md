@@ -35,13 +35,12 @@ Monitor GPU-related communication channels, identify valuable debugging informat
 
 ## MCP Tools Available
 
-**GPU KB Tools:**
-- `amd_gpu_kb_create_entry(...)` - Create new KB entry
-- `amd_gpu_kb_update_entry(entry_id, ...)` - Update existing entry
-- `amd_gpu_kb_get_entry(entry_id)` - Retrieve entry
-- `amd_gpu_kb_search_hybrid(query, limit)` - Search for duplicates
-- `amd_gpu_kb_get_statistics()` - KB health metrics
-- `amd_gpu_kb_list_categories()` - Available categories
+**Knowledge Base Tools (ntsg_kb_*):**
+- `ntsg_kb_create_entry(subsystem="gpu", ...)` - Create new KB entry
+- `ntsg_kb_get_entry(entry_id)` - Retrieve entry
+- `ntsg_kb_search(query, subsystem="gpu", method="hybrid")` - Search for duplicates
+- `ntsg_kb_list_entries(subsystem="gpu")` - List KB entries
+- `ntsg_kb_stats(subsystem="gpu")` - KB health metrics
 
 ## KB Entry Schema
 
@@ -93,15 +92,17 @@ Use appropriate categories from:
 **Example:**
 ```python
 # Search for duplicate
-results = amd_gpu_kb_search_hybrid(
+results = ntsg_kb_search(
     query="GPU ECC uncorrectable error training crash",
-    limit=5
+    subsystem="gpu",
+    method="hybrid"
 )
 
 # If no duplicate found, create new entry
 if not results:
-    amd_gpu_kb_create_entry(
-        type="issue",
+    ntsg_kb_create_entry(
+        subsystem="gpu",
+        entry_type="issue",
         title="Training crash due to GPU ECC uncorrectable errors",
         description="""
 ## Symptom
@@ -149,8 +150,9 @@ HBM failure due to thermal stress or voltage drift.
 
 **Example:**
 ```python
-amd_gpu_kb_create_entry(
-    type="guide",
+ntsg_kb_create_entry(
+    subsystem="gpu",
+    entry_type="guide",
     title="ROCm Installation and Configuration Guide",
     description="""
 Comprehensive guide for installing and configuring ROCm on Ubuntu 22.04...
@@ -182,8 +184,9 @@ Comprehensive guide for installing and configuring ROCm on Ubuntu 22.04...
 
 **Example:**
 ```python
-amd_gpu_kb_create_entry(
-    type="issue",
+ntsg_kb_create_entry(
+    subsystem="gpu",
+    entry_type="issue",
     title="Low GPU utilization due to PCIe link degradation",
     description="""
 ## Symptom
@@ -230,21 +233,11 @@ This reduces GPU-CPU bandwidth by 75%, causing GPU starvation.
 **Example:**
 ```python
 # Get existing entry
-entry = amd_gpu_kb_get_entry(entry_id="gpu-kb-042")
+entry = ntsg_kb_get_entry(entry_id="gpu-kb-042")
 
-# Add new information
-updated_description = entry['description'] + """
-
-## Update 2026-03-17
-Found that this issue is specific to ROCm 5.7.0. Upgrade to 5.7.1 resolves the problem.
-Firmware version 1.2.3 also exacerbates the issue.
-"""
-
-# Update entry
-amd_gpu_kb_update_entry(
-    entry_id="gpu-kb-042",
-    description=updated_description
-)
+# Add new information - note: update functionality depends on implementation
+# For now, search, retrieve, and create updated entry
+```
 ```
 
 ## Best Practices

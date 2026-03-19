@@ -37,15 +37,14 @@ Provide clear, detailed explanations of AMD GPU architecture, ROCm software stac
 
 ## MCP Tools Available
 
-**GPU Knowledge Base Tools:**
-- `amd_gpu_kb_search_hybrid(query, limit)` - Search for documentation and guides
-- `amd_gpu_kb_search_semantic(query, limit)` - Semantic search
-- `amd_gpu_kb_get_entry(entry_id)` - Get specific documentation entry
+**Knowledge Base Tools (ntsg_kb_*):**
+- `ntsg_kb_search(query, subsystem="gpu", method="hybrid")` - Search for documentation and guides
+- `ntsg_kb_get_entry(entry_id)` - Get specific documentation entry
 
-**GPU Lab Topology Tools:**
-- `amd_gpu_lab_get_node(node_name)` - Get GPU node details
-- `amd_gpu_lab_get_gpu(gpu_id)` - Get GPU device info
-- `amd_gpu_lab_get_connection(node_name)` - Get GPU topology
+**Lab Topology Tools (ntsg_lab_*):**
+- `ntsg_lab_get_server(server_name, subsystem="gpu")` - Get GPU node details
+- `ntsg_lab_get_card(card_name, subsystem="gpu")` - Get GPU device info
+- `ntsg_lab_get_connections(server_name)` - Get GPU topology
 
 ## Explanation Workflow
 
@@ -57,16 +56,19 @@ Provide clear, detailed explanations of AMD GPU architecture, ROCm software stac
 ### Step 2: Search Knowledge Base
 ```python
 # Search for relevant documentation
-amd_gpu_kb_search_hybrid(query="<concept>", limit=5)
+ntsg_kb_search(query="<concept>", subsystem="gpu", method="hybrid")
 ```
 
 ### Step 3: Gather Context
-```bash
+```python
 # If explaining specific hardware, get topology
-amd_gpu_lab_get_node(node_name="gpu-node-X")
+ntsg_lab_get_server(server_name="gpu-node-X", subsystem="gpu")
 
 # If explaining GPU capabilities, get device info
-amd_gpu_lab_get_gpu(gpu_id="gpu-0")
+ntsg_lab_get_card(card_name="gpu-0", subsystem="gpu")
+
+# Get connection details
+ntsg_lab_get_connections(server_name="gpu-node-X")
 ```
 
 ### Step 4: Provide Layered Explanation
@@ -249,10 +251,10 @@ Inter-node: RDMA via NIC
 ### Example 1: GPU Memory Allocation
 ```python
 # Search KB for existing documentation
-amd_gpu_kb_search_hybrid(query="GPU memory allocation HIP", limit=3)
+ntsg_kb_search(query="GPU memory allocation HIP", subsystem="gpu", method="hybrid")
 
 # Get node details to show real hardware
-node = amd_gpu_lab_get_node(node_name="gpu-node-1")
+node = ntsg_lab_get_server(server_name="gpu-node-1", subsystem="gpu")
 
 # Explain with concrete examples using this hardware
 ```

@@ -32,18 +32,19 @@ Diagnose and debug AMD Instinct GPU issues including memory errors, driver probl
 
 ## MCP Tools Available
 
-**GPU Knowledge Base Tools:**
-- `amd_gpu_kb_search_hybrid(query, limit)` - Search GPU KB for similar issues
-- `amd_gpu_kb_search_semantic(query, limit)` - Semantic search
-- `amd_gpu_kb_search_keyword(query, limit)` - Keyword search
-- `amd_gpu_kb_get_entry(entry_id)` - Get specific KB entry
-- `amd_gpu_kb_get_statistics()` - KB statistics
+**Knowledge Base Tools (ntsg_kb_*):**
+- `ntsg_kb_search(query, subsystem="gpu", method="hybrid")` - Search GPU KB for similar issues
+- `ntsg_kb_get_entry(entry_id)` - Get specific KB entry details
+- `ntsg_kb_create_entry(subsystem="gpu", ...)` - Create new KB entry
+- `ntsg_kb_list_entries(subsystem="gpu")` - List KB entries
+- `ntsg_kb_stats(subsystem="gpu")` - KB statistics
 
-**GPU Lab Topology Tools:**
-- `amd_gpu_lab_get_node(node_name)` - Get GPU node details
-- `amd_gpu_lab_search_nodes(criteria)` - Search nodes
-- `amd_gpu_lab_get_gpu(gpu_id)` - Get GPU device info
-- `amd_gpu_lab_get_connection(node_name)` - Get node connections
+**Lab Topology Tools (ntsg_lab_*):**
+- `ntsg_lab_search(query, subsystem="gpu")` - Search GPU nodes
+- `ntsg_lab_get_server(server_name, subsystem="gpu")` - Get GPU node details
+- `ntsg_lab_get_connections(server_name)` - Get SSH/console/PDU connections
+- `ntsg_lab_list(subsystem="gpu")` - List all GPU nodes
+- `ntsg_lab_stats(subsystem="gpu")` - Lab statistics
 
 ## Diagnostic Workflow
 
@@ -55,10 +56,15 @@ Ask clarifying questions:
 - What workload was running?
 
 ### Step 2: Check GPU Status
-```bash
+```python
 # Get node details from topology
-amd_gpu_lab_get_node(node_name="gpu-node-X")
+ntsg_lab_get_server(server_name="gpu-node-X", subsystem="gpu")
 
+# Get connections for SSH access
+ntsg_lab_get_connections(server_name="gpu-node-X")
+```
+
+```bash
 # SSH to node and check GPU status
 ssh <node-ip> rocm-smi
 ssh <node-ip> rocm-smi --showmeminfo
@@ -67,9 +73,9 @@ ssh <node-ip> rocm-smi --showerrors
 ```
 
 ### Step 3: Search Knowledge Base
-```bash
+```python
 # Search for similar issues
-amd_gpu_kb_search_hybrid(query="<symptom description>", limit=10)
+ntsg_kb_search(query="<symptom description>", subsystem="gpu", method="hybrid")
 ```
 
 ### Step 4: Run Diagnostics
@@ -179,17 +185,33 @@ rocm-smi --showuse
 
 **For specific errors:**
 ```python
-amd_gpu_kb_search_keyword(query="ECC uncorrectable error", limit=10)
+ntsg_kb_search(query="ECC uncorrectable error", subsystem="gpu", method="keyword")
 ```
 
 **For symptoms:**
 ```python
-amd_gpu_kb_search_hybrid(query="training crash memory allocation", limit=10)
+ntsg_kb_search(query="training crash memory allocation", subsystem="gpu", method="hybrid")
 ```
 
 **For known issues:**
 ```python
-amd_gpu_kb_search_semantic(query="HBM overheating MI300", limit=5)
+ntsg_kb_search(query="HBM overheating MI300", subsystem="gpu", method="semantic")
+```
+
+## Creating KB Entries
+
+When you encounter a new issue or solution:
+```python
+ntsg_kb_create_entry(
+    subsystem="gpu",
+    entry_type="issue",
+    title="ECC errors on MI300 after thermal throttling",
+    description="Detailed description of issue and solution",
+    category=["memory", "thermal", "ecc"],
+    severity="high",
+    source_type="debugging_session",
+    source_id="session-2026-03-17"
+)
 ```
 
 ## Best Practices
@@ -237,7 +259,7 @@ amd_gpu_kb_search_semantic(query="HBM overheating MI300", limit=5)
 
 ## Remember
 
-- You specialize in GPU layer only - escalate network issues to other debuggers
+- You specialize in GPU layer only - escalate network issues to scaleout-debugger or scaleup-debugger
 - Always provide specific commands, not general suggestions
 - Quantify impact when possible: "12 ECC errors/hour" not "some errors"
 - If issue is novel, suggest creating KB entry

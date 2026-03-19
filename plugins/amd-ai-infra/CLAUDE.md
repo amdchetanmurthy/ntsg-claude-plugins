@@ -21,28 +21,28 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Plugin Components
 
-1. **MCP Server Layer** (`tools/mcp_server.py`)
-   - Unified MCP server providing 51 tools
-   - GPU tools (17): `amd_gpu_*`
-   - Scale-UP tools (17): `amd_scaleup_*`
-   - Scale-OUT tools (17): `amd_scaleout_*`
+1. **MCP Server** (provided by `ntsg-mcp-server`)
+   - Unified MCP server providing 11 tools with subsystem parameter
+   - KB tools (5): `ntsg_kb_search`, `ntsg_kb_get_entry`, `ntsg_kb_create_entry`, `ntsg_kb_list_entries`, `ntsg_kb_stats`
+   - Lab tools (6): `ntsg_lab_search`, `ntsg_lab_get_server`, `ntsg_lab_get_card`, `ntsg_lab_get_connections`, `ntsg_lab_list`, `ntsg_lab_stats`
+   - Subsystem parameter accepts: "scaleout", "scaleup", "gpu", or empty for all
 
-2. **Knowledge Base Subsystems** (`tools/{gpu,scaleup,scaleout}/kb/`)
+2. **Knowledge Base** (via MCP server)
    - RAG-enabled knowledge bases using ChromaDB
    - Local embeddings via sentence-transformers
    - Stores debugging knowledge from Slack, Confluence, Jira
-   - Location: `~/.cache/amd-ai-infra/{subsystem}-kb-vectors/`
+   - Location: `~/.cache/ntsg-mcp-server/kb-vectors/`
 
-3. **Lab Topology Subsystems** (`tools/{gpu,scaleup,scaleout}/lab/`)
+3. **Lab Topology** (via MCP server)
    - Manages lab equipment information
    - Provides node/switch/server IPs, BMC access, console connections
-   - Source: `labinfo/{gpu,scaleup,scaleout}_topology.json`
+   - Source: `labinfo/topology.json`
 
-4. **Agent System** (`.claude/agents/`)
+4. **Agent System** (`agents/`)
    - **13 Total Agents:**
      - 9 subsystem agents (debugger, explainer, kb-updater per subsystem)
      - 4 cross-subsystem agents (cluster-orchestrator, performance-analyzer, kb-validator, docs-publisher)
-   - Each has persistent memory in `.claude/agent-memory/<agent>/`
+   - Each uses persistent memory via Claude Code auto-memory
 
 ## Directory Structure
 
@@ -81,13 +81,25 @@ amd-ai-infra/
 ## Tool Naming Convention
 
 ```
-amd_{subsystem}_{component}_{action}
+ntsg_{component}_{action}(subsystem="...")
 ```
 
-Examples:
-- `amd_gpu_kb_search_hybrid`
-- `amd_scaleup_lab_get_switch`
-- `amd_scaleout_lab_get_server`
+**KB Tools:**
+- `ntsg_kb_search(query, subsystem, method, limit)` - Search KB (method: hybrid, keyword, semantic)
+- `ntsg_kb_get_entry(entry_id)` - Get specific entry
+- `ntsg_kb_create_entry(subsystem, entry_type, title, ...)` - Create new entry
+- `ntsg_kb_list_entries(subsystem, entry_type, limit)` - List entries
+- `ntsg_kb_stats(subsystem)` - Get KB statistics
+
+**Lab Tools:**
+- `ntsg_lab_search(query, subsystem, resource_type)` - Search servers/cards
+- `ntsg_lab_get_server(server_name, subsystem)` - Get server details
+- `ntsg_lab_get_card(card_name, subsystem)` - Get card info
+- `ntsg_lab_get_connections(server_name)` - Get connection details
+- `ntsg_lab_list(subsystem, resource_type)` - List resources
+- `ntsg_lab_stats(subsystem)` - Lab statistics
+
+**Valid Subsystems:** "scaleout", "scaleup", "gpu", or empty for all
 
 ## Common Workflows
 
@@ -110,15 +122,19 @@ When debugging issues:
 **Search KB:**
 ```python
 # Hybrid search (recommended)
-amd_gpu_kb_search_hybrid(query="GPU memory error", limit=10)
-amd_scaleup_kb_search_hybrid(query="port flapping", limit=10)
-amd_scaleout_kb_search_hybrid(query="RDMA timeout", limit=10)
+ntsg_kb_search(query="GPU memory error", subsystem="gpu", method="hybrid")
+ntsg_kb_search(query="port flapping", subsystem="scaleup", method="hybrid")
+ntsg_kb_search(query="RDMA timeout", subsystem="scaleout", method="hybrid")
+
+# Search all subsystems
+ntsg_kb_search(query="training crash", subsystem="", method="hybrid")
 ```
 
 **Create KB Entry:**
 ```python
-amd_{subsystem}_kb_create_entry(
-    type="issue",
+ntsg_kb_create_entry(
+    subsystem="gpu",
+    entry_type="issue",
     title="Brief description",
     description="Detailed description",
     category=["category1", "category2"],
@@ -133,13 +149,16 @@ amd_{subsystem}_kb_create_entry(
 **Get Node/Switch/Server Details:**
 ```python
 # GPU node
-node = amd_gpu_lab_get_node(node_name="gpu-node-1")
+node = ntsg_lab_get_server(server_name="gpu-node-1", subsystem="gpu")
 
 # Switch
-switch = amd_scaleup_lab_get_switch(switch_name="th6-switch-1")
+switch = ntsg_lab_get_server(server_name="th6-switch-1", subsystem="scaleup")
 
 # NIC server
-server = amd_scaleout_lab_get_server(server_name="waco1-1")
+server = ntsg_lab_get_server(server_name="waco1-1", subsystem="scaleout")
+
+# Get connections for any server
+connections = ntsg_lab_get_connections(server_name="waco1-1")
 ```
 
 ## Development Guidelines
