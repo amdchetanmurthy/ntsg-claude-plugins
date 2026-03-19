@@ -8,14 +8,14 @@
   },
   "plugins": [
     {
-      "name": "amd-ai-infra",
+      "name": "amd-ntsg-debug",
       "description": "Comprehensive tooling for managing and debugging AMD GPU infrastructure, including ROCm diagnostics, scale-out networking, topology visualization, and knowledge base integration",
       "version": "0.1.0",
       "author": {
         "name": "NTSG",
         "email": "cmurthy@amd.com"
       },
-      "source": "./plugins/amd-ai-infra",
+      "source": "./plugins/amd-ntsg-debug",
       "category": "infrastructure",
       "strict": false,
       "tags": [
@@ -27,7 +27,7 @@
         "infrastructure",
         "debugging"
       ],
-      "homepage": "https://github.com/pensando/ai-lab/ntsg-claude-plugins/plugins/amd-ai-infra",
+      "homepage": "https://github.com/pensando/ai-lab/ntsg-claude-plugins/plugins/amd-ntsg-debug",
       "keywords": [
         "AMD",
         "GPU",

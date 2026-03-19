@@ -28,10 +28,10 @@ This plugin embeds these practices into structured workflows with specialized ag
 ```bash
 # Clone the plugin repository
 cd ~/.claude/plugins
-git clone <repository-url> amd-ai-infra
+git clone <repository-url> amd-ntsg-debug
 
 # Install Python dependencies
-cd amd-ai-infra
+cd amd-ntsg-debug
 pip install -r requirements.txt
 
 # Initialize ChromaDB vector stores for all subsystems
@@ -554,9 +554,9 @@ Each subsystem maintains a RAG-enabled knowledge base using ChromaDB:
 ### KB Storage
 
 Knowledge bases are stored in ChromaDB collections:
-- GPU KB: `~/.cache/amd-ai-infra/gpu-kb-vectors/`
-- Scale-UP KB: `~/.cache/amd-ai-infra/scaleup-kb-vectors/`
-- Scale-OUT KB: `~/.cache/amd-ai-infra/scaleout-kb-vectors/`
+- GPU KB: `~/.cache/amd-ntsg-debug/gpu-kb-vectors/`
+- Scale-UP KB: `~/.cache/amd-ntsg-debug/scaleup-kb-vectors/`
+- Scale-OUT KB: `~/.cache/amd-ntsg-debug/scaleout-kb-vectors/`
 
 ## Lab Topology
 
@@ -660,7 +660,7 @@ Each subsystem has a JSON file in `labinfo/`:
 ## Project Structure
 
 ```
-amd-ai-infra/
+amd-ntsg-debug/
 ├── .claude-plugin/
 │   └── plugin.json          # Plugin metadata
 ├── agents/                  # Agent definitions (to be created)
@@ -759,7 +759,7 @@ amd-ai-infra/
 
 **Solutions:**
 - Check disk space (ChromaDB needs ~1GB per subsystem)
-- Check permissions on `~/.cache/amd-ai-infra/`
+- Check permissions on `~/.cache/amd-ntsg-debug/`
 - Reinstall ChromaDB: `pip install --upgrade chromadb`
 
 ### Agents Can't Find Equipment

@@ -8,7 +8,7 @@ Complete architecture overview of the AMD AI Infrastructure debugging system.
 ┌─────────────────────────────────────────────────────────────┐
 │                     Claude Code Client                       │
 │  ┌───────────────────────────────────────────────────────┐  │
-│  │           amd-ai-infra Plugin (Local)                 │  │
+│  │           amd-ntsg-debug Plugin (Local)                 │  │
 │  │  ┌──────────┐  ┌──────────┐  ┌────────┐  ┌─────────┐│  │
 │  │  │ 13 Agents│  │ 1 Skill  │  │4 Cmds  │  │.mcp.json││  │
 │  │  └──────────┘  └──────────┘  └────────┘  └─────────┘│  │
@@ -51,9 +51,9 @@ Complete architecture overview of the AMD AI Infrastructure debugging system.
 
 ## Component Breakdown
 
-### 1. Claude Code Plugin (`amd-ai-infra`)
+### 1. Claude Code Plugin (`amd-ntsg-debug`)
 
-**Location:** `~/ntsg/ntsg-claude-plugins/plugins/amd-ai-infra/`
+**Location:** `~/ntsg/ntsg-claude-plugins/plugins/amd-ntsg-debug/`
 
 **Purpose:** Provides unified debugging interface for AMD AI infrastructure (GPU, scale-up, scale-out)
 
@@ -211,7 +211,7 @@ User → /debug-nic --server waco-001
 ├── ai-lab/                              # Source project (symlink)
 │   └── projects/scaleout-debugger/      # Original debugger
 ├── ntsg-claude-plugins/
-│   └── plugins/amd-ai-infra/            # Claude Code plugin
+│   └── plugins/amd-ntsg-debug/            # Claude Code plugin
 │       ├── .claude-plugin/plugin.json
 │       ├── .mcp.json                    # MCP connection config
 │       ├── agents/                      # 13 agents

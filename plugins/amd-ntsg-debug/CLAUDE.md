@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**amd-ai-infra** is an AI-powered unified debugging and knowledge management system for AMD's complete AI cluster infrastructure stack. It combines specialized AI agents, RAG-enabled knowledge bases, and lab topology management to diagnose and debug issues across GPU compute, scale-up network, and scale-out network layers.
+**amd-ntsg-debug** is an AI-powered debugging and diagnostics system for AMD AI infrastructure (GPU, scale-up network, scale-out network). Part of the NTSG (Networking Technology and Solutions Group) plugin suite. It combines specialized AI agents, RAG-enabled knowledge bases, and lab topology management to diagnose and debug issues across GPU compute, scale-up network, and scale-out network layers.
 
 **Key Resources:**
 - [Implementation Plan](./AMD-AI-INFRA-PLAN.md)
@@ -47,7 +47,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Directory Structure
 
 ```
-amd-ai-infra/
+amd-ntsg-debug/
 ├── tools/
 │   ├── mcp_server.py              # Unified MCP server
 │   ├── gpu/                       # GPU subsystem

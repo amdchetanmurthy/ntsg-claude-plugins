@@ -1,7 +1,7 @@
 {
-  "name": "amd-ai-infra",
+  "name": "amd-ntsg-debug",
   "version": "0.1.0",
-  "description": "Comprehensive AI-powered unified debugging and knowledge management system for AMD's complete AI cluster infrastructure stack",
+  "description": "AI-powered debugging and diagnostics system for AMD AI infrastructure (GPU, scale-up network, scale-out network)",
   "author": {
     "name": "AMD NTSG",
     "email": "chetan.murthy@amd.com"

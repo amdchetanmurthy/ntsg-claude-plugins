@@ -18,14 +18,14 @@ The AMD AI Infra plugin provides comprehensive tooling for managing and debuggin
 
 **Status:** In Development
 
-See [`plugins/amd-ai-infra/`](plugins/amd-ai-infra/) for detailed documentation.
+See [`plugins/amd-ntsg-debug/`](plugins/amd-ntsg-debug/) for detailed documentation.
 
 ## Structure
 
 ```
 ntsg-claude-plugins/
 ├── plugins/
-│   └── amd-ai-infra/     # AMD AI Infrastructure plugin
+│   └── amd-ntsg-debug/     # AMD AI Infrastructure plugin
 ├── .claude-plugin/
 │   └── marketplace.json  # Marketplace metadata
 └── README.md
@@ -47,7 +47,7 @@ This repository is structured to host additional plugins as needed. Each plugin 
 
 2. Install individual plugins by symlinking to your Claude Code plugins directory:
    ```bash
-   ln -s $(pwd)/plugins/amd-ai-infra ~/.claude/plugins/amd-ai-infra
+   ln -s $(pwd)/plugins/amd-ntsg-debug ~/.claude/plugins/amd-ntsg-debug
    ```
 
 3. Restart Claude Code or run `/plugin reload`
@@ -62,7 +62,7 @@ When published, plugins can be installed via:
 command line 
 ```
  claude plugin marketplace  add git@github.com:amdchetanmurthy/ntsg-claude-plugins.git
- claude plugin install amd-ai-infra@ntsg-claude-plugins
+ claude plugin install amd-ntsg-debug@ntsg-claude-plugins
  ```
 
 ## Development
