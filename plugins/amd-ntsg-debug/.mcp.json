@@ -1,7 +1,5 @@
 {
-  "mcpServers": {
-    "ntsg": {
-      "url": "http://192.168.67.4:8765/sse"
-    }
+  "ntsg": {
+    "url": "http://192.168.67.4:8765/sse"
   }
 }
